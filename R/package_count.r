@@ -14,7 +14,7 @@ kable(pck)
 ##
 stats_2016_11_01 <- cran_stats_by_day("2016-11-01")
 
-dates <- seq(ymd("2016-10-01"),ymd("2016-10-05"),by="day")
+dates <- seq(ymd("2016-10-06"),ymd("2016-10-11"),by="day")
 
 stats_mid_october <- sapply(dates,function(x) cran_stats_by_day(x))
 
@@ -28,7 +28,11 @@ for (i in 1:length(stats_mid_october)){
 names(stats_mid_october_df) <- c("Package","Count")
 
 #Summarize the counts of each package
-stats_mid_october_df_sum <- ddply(stats_mid_october_df,"Package",summarise, 
-                                  Sum=sum(Count))
+stats_mid_october_df_sum <- ddply(stats_mid_october_df,Package,summarise, 
+                                  Sum=sum(Count),
+                                  Appearances=length(Count),
+                                  Average=round(mean(Count),0)
+                                  )
 
-kable(head(stats_mid_october_df_sum))
+kable(head(stats_mid_october_df_sum,15))
+subset(stats_mid_october_df_sum,Package==package_name)
