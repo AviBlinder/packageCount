@@ -6,33 +6,52 @@ package_name <- "tsSelect"
 from_date <- '2016-10-01'
 to_date <- today() - days(2)
 
+
+#load functions
 source("R/functions.r")
+###################################################################
+##Read range of dates and summarize stats by package
 pck <- cran_stats_by_package(from_date,to_date , package_name)
 library(knitr)
 kable(pck)
 
-##
+###################################################################
+#Read CRAN by specific date
 stats_2016_11_01 <- cran_stats_by_day("2016-11-01")
 
-dates <- seq(ymd("2016-10-06"),ymd("2016-10-11"),by="day")
+dates <- seq(ymd("2016-10-06"),ymd("2016-10-08"),by="day")
 
-stats_mid_october <- sapply(dates,function(x) cran_stats_by_day(x))
+###################################################################
+##Read by day, but with range of dates 
+stats_cran <- sapply(dates,function(x) cran_stats_by_day(x))
 
+#Combine results from all extracted days
 
-###Combine results from all extracted days
-stats_mid_october_df <- c()
-for (i in 1:length(stats_mid_october)){
-  stats_mid_october_df <- rbind(stats_mid_october_df,
-                                as.data.frame(unlist(stats_mid_october[[i]])))
+if (class(stats_cran) == "matrix"){
+  stats_cran_df <- as.data.frame(stats_cran)
+  stats_cran_df$Package <- row.names(stats_cran_df)
+  row.names(stats_cran_df) <- NULL
+  names(stats_cran_df) <- c("Count","Package")
+  stats_cran_df <- stats_cran_df[,c(2,1)]
+  } else{
+  stats_cran_df <- c()
+  for (i in 1:length(stats_cran)){
+    stats_cran_df <- rbind(stats_cran_df,
+                                  as.data.frame(unlist(stats_cran[[i]])))
+  }
+  names(stats_cran_df) <- c("Package","Count")
 }
-names(stats_mid_october_df) <- c("Package","Count")
+  
+
+head(stats_cran_df)
 
 #Summarize the counts of each package
-stats_mid_october_df_sum <- ddply(stats_mid_october_df,Package,summarise, 
+stats_cran_df_sum <- ddply(stats_cran_df,"Package",summarise, 
                                   Sum=sum(Count),
                                   Appearances=length(Count),
                                   Average=round(mean(Count),0)
                                   )
 
-kable(head(stats_mid_october_df_sum,15))
-subset(stats_mid_october_df_sum,Package==package_name)
+kable(head(stats_cran_df_sum,15))
+subset(stats_cran_df_sum,Package==package_name)
+###################################################################
