@@ -15,14 +15,25 @@ source("R/functions.r")
 ##Read range of dates and summarize stats by package
 ## --> Stats for One package over a range of dates
 ## Returns a data frame with results
-pck <- cran_stats_by_package(from_date,to_date , package_name)
-head(pck)
-countries_table <- table(pck$country)
-countries_table
+package_stats <- cran_stats_by_package(from_date,to_date , package_name)
+head(package_stats)
+#######
+#Read countries table
+countries <- read.csv("data/GeoLite2-Country-Locations-en.csv",header = TRUE,
+                        stringsAsFactors = FALSE)
+head(countries)
 
 
-library(knitr)
-kable(countries_table)
+package_stats2 <- merge(package_stats,countries,by.x = "country",by.y="country_iso_code") 
+head(package_stats2)
+
+stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
+stats1
+
+library(plyr)
+stats_by_continent <- ddply(package_stats2,"continent_name",summarise,
+                    Count=length(continent_name))
+
 
 ###################################################################
 #Read CRAN by specific date
