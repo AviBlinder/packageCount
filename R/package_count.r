@@ -4,7 +4,7 @@ rm(list=ls())
 
 #package_name <- "tsSelect"
 sel_package_name <- "RNeo4j"
-from_date <- '2016-01-01'
+from_date <- '2016-04-06'
 #to_date <- '2016-11-03'
 to_date <- today() - days(2)
 
@@ -34,7 +34,7 @@ library(plyr)
 stats_by_continent <- ddply(package_stats2,"continent_name",summarise,
                     Count=length(continent_name))
 
-
+stats_by_continent
 ###################################################################
 #Read CRAN by specific date
 ## --> Stats for All package over One Date
