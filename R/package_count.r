@@ -4,9 +4,9 @@ rm(list=ls())
 
 #package_name <- "tsSelect"
 sel_package_name <- "RNeo4j"
-from_date <- '2016-10-01'
-to_date <- '2016-10-03'
-#to_date <- today() - days(2)
+from_date <- '2016-01-01'
+#to_date <- '2016-11-03'
+to_date <- today() - days(2)
 
 
 #load functions
