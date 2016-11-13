@@ -1,4 +1,8 @@
 library(lubridate)
+library(dplyr)
+library(plyr)
+library(knitr)
+library(ggplot2)
 
 rm(list=ls())
 
@@ -30,11 +34,33 @@ head(package_stats2)
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1
 
-library(plyr)
-stats_by_continent <- ddply(package_stats2,"continent_name",summarise,
-                    Count=length(continent_name))
 
-stats_by_continent
+package_stats2 %>% group_by(continent_name) %>%
+                  summarise(count=n()) %>%
+                  arrange(-count) %>%
+                  mutate(cont_order = row_number(),
+                         continent_name = factor(continent_name,
+                                            levels = continent_name[order(cont_order)])) %>%
+                  ggplot(aes(x=continent_name,y=count))+
+                  geom_bar(aes(fill=continent_name),stat="identity",
+                           show.legend = FALSE) +
+                  coord_flip()+
+                  geom_text(aes(label=continent_name),
+                  y=0.2,
+                  hjust=0,
+                  angle=0,
+                  size=4,
+                  color="#222222") +
+                  xlab("Continent Name") +
+                  ylab("Total Number of Package Installed") +
+                  theme(axis.text.y=element_blank(),
+                        axis.ticks.y=element_blank())
+
+
+kable(stats_by_continent)
+
+
+
 ###################################################################
 #Read CRAN by specific date
 ## --> Stats for All package over One Date
