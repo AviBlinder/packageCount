@@ -12,15 +12,12 @@ stats1
 head(package_stats2)
 
 #in case of conflict between plyr and dplyr, detach plyr
-<<<<<<< HEAD
 #detach("package:plyr", unload=TRUE) 
+
 package_stats2 %>% group_by(continent_name)  %>%
     dplyr::summarise(count=n()) %>%
-=======
-detach("package:plyr", unload=TRUE) 
-package_stats2 %>% group_by(continent_name)  %>%
+    package_stats2 %>% group_by(continent_name)  %>%
     summarise(count=n()) %>%
->>>>>>> 1a496faa27d84e9286b837169b755db7eae81b2d
     arrange(-count) %>%
     mutate(cont_order = row_number(),
            continent_name = factor(continent_name,
@@ -41,8 +38,6 @@ package_stats2 %>% group_by(continent_name)  %>%
           axis.ticks.y=element_blank())
 
 
-<<<<<<< HEAD
+
 #kable(stats_by_continent)
-=======
-kable(stats_by_continent)
->>>>>>> 1a496faa27d84e9286b837169b755db7eae81b2d
+

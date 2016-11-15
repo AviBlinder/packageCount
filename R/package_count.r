@@ -1,10 +1,10 @@
 library(lubridate)
 library(dplyr)
-#library(plyr)
+library(plyr)
 library(knitr)
 library(ggplot2)
 
-conflicts() 
+#conflicts() 
 
 rm(list=ls())
 
