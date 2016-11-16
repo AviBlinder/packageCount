@@ -8,9 +8,10 @@ library(ggplot2)
 
 rm(list=ls())
 
-#package_name <- "sparklyr"
-sel_package_name <- "RNeo4j"
+#sel_package_name <- "RNeo4j"
 #sel_package_name <- "sparklyr"
+sel_package_name <- "mongolite"
+
 from_date <- '2016-09-24'
 #to_date <- '2016-11-03'
 ##Usually there is a delay of two days in the upload of the latest log
