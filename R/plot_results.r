@@ -16,8 +16,6 @@ head(package_stats2)
 
 package_stats2 %>% group_by(continent_name)  %>%
     dplyr::summarise(count=n()) %>%
-    package_stats2 %>% group_by(continent_name)  %>%
-    summarise(count=n()) %>%
     arrange(-count) %>%
     mutate(cont_order = row_number(),
            continent_name = factor(continent_name,
