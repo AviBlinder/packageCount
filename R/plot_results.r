@@ -58,7 +58,7 @@ package_stats2 %>%
          continent_name = factor(continent_name,
                                  levels = continent_name[order(cont_order)])) %>%
   ggplot(aes(x=continent_name,y=count))+
-  geom_bar(aes(fill=continent_name,group=package_name),stat="identity",
+  geom_bar(aes(fill=continent_name,=package_name),stat="identity",
            show.legend = FALSE) +
  coord_flip()+
 #  facet_grid(~ package_name) +

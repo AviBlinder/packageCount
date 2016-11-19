@@ -1,12 +1,10 @@
-cran_stats_by_package <- function(from_date,to_date,package_name){
+cran_stats_by_package <- function(from_date,to_date,sel_package_name){
   
-  library(lubridate)
-  library(tidyr)
   ##
-  start <- ymd(from_date)
-  today <- ymd(to_date)
+  start_date <- ymd(from_date)
+  end_date <- ymd(to_date)
   
-  all_days <- seq(start, today, by = 'day')
+  all_days <- seq(start_date, end_date, by = 'day')
   years <- year(all_days)
   
   urls <- paste0('http://cran-logs.rstudio.com/', years, '/', all_days, '.csv.gz')
@@ -31,9 +29,7 @@ cran_stats_by_package <- function(from_date,to_date,package_name){
 }
 ######################################################################################
 cran_stats_by_day <- function(Date){
-  
-  library(lubridate)
-  ##
+
   start <- ymd(Date)
 
   
@@ -54,15 +50,14 @@ cran_stats_by_day <- function(Date){
                                         "package_name","package_version","country","ip_id"))
 }
 #######################################################################################
-cran_stats_by_packages <- function(from_date,to_date,package_name){
+cran_stats_by_packages <- function(from_date,to_date,sel_package_name){
   
-  library(lubridate)
-  library(tidyr)
+
   ##
-  start <- ymd(from_date)
-  today <- ymd(to_date)
+  start_date <- ymd(from_date)
+  end_date <- ymd(to_date)
   
-  all_days <- seq(start, today, by = 'day')
+  all_days <- seq(start_date, end_date, by = 'day')
   years <- year(all_days)
   
   urls <- paste0('http://cran-logs.rstudio.com/', years, '/', all_days, '.csv.gz')
