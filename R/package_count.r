@@ -12,6 +12,8 @@ rm(list=ls())
 #sel_package_name <- "sparklyr"
 sel_package_name <- "mongolite"
 
+
+
 from_date <- '2016-09-24'
 #to_date <- '2016-11-03'
 ##Usually there is a delay of two days in the upload of the latest log
@@ -34,3 +36,8 @@ source("R/plot_results.r")
 ## --> Stats for All package over One Date
 stats_2016_11_01 <- cran_stats_by_day("2016-11-01")
 head(stats_2016_11_01)
+########################################################################
+package_name <- c("RNeo4j","sparklyr","mongolite","rmongodb","RMongo")
+
+packages_stats <- cran_stats_by_packages(from_date,to_date , package_name)
+head(package_stats)
