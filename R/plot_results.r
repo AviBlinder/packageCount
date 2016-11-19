@@ -4,7 +4,7 @@ countries <- read.csv("data/GeoLite2-Country-Locations-en.csv",header = TRUE,
 head(countries)
 
 
-package_stats2 <- merge(package_stats,countries,by.x = "country",by.y="country_iso_code") 
+package_stats2 <- merge(packages_stats,countries,by.x = "country",by.y="country_iso_code") 
 head(package_stats2)
 
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
@@ -15,11 +15,11 @@ head(package_stats2)
 #detach("package:plyr", unload=TRUE) 
 
 package_stats2 %>% group_by(continent_name)  %>%
-    dplyr::summarise(count=n()) %>%
-    arrange(-count) %>%
-    mutate(cont_order = row_number(),
+    dplyr::summarise(Count=n())  %>%
+    arrange(-Count) %>%
+    mutate(cont_order = row_number(Count),  
            continent_name = factor(continent_name,
-             levels = continent_name[order(cont_order)])) %>%
+             levels = continent_name[order(cont_order)]))  %>%
     ggplot(aes(x=continent_name,y=count))+
     geom_bar(aes(fill=continent_name),stat="identity",
              show.legend = FALSE) +

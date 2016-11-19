@@ -37,7 +37,8 @@ source("R/plot_results.r")
 ## --> Stats for All package over One Date
 stats_2016_11_01 <- cran_stats_by_day("2016-11-01")
 head(stats_2016_11_01)
-########################################################################
+#############################################################################
+#############################################################################
 sel_package_name <- c("RNeo4j","sparklyr","mongolite","rmongodb","RMongo")
 from_date <- today() - days(4)
 to_date <- today() - days(2)
