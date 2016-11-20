@@ -11,6 +11,9 @@ stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1
 head(package_stats2)
 
+
+
+
 #in case of conflict between plyr and dplyr, detach plyr
 #detach("package:plyr", unload=TRUE) 
 

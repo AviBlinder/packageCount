@@ -40,11 +40,19 @@ head(stats_2016_11_01)
 #############################################################################
 #############################################################################
 sel_package_name <- c("RNeo4j","sparklyr","mongolite","rmongodb","RMongo")
-from_date <- today() - days(4)
+
+from_date <- '2016-06-18'
+#to_date <- '2016-11-03'
+##Usually there is a delay of two days in the upload of the latest log
 to_date <- today() - days(2)
-package_name
-from_date;to_date
+
+
+sel_package_name;from_date;to_date
 
 packages_stats <- cran_stats_by_packages(from_date,to_date , sel_package_name)
 head(packages_stats)
 table(packages_stats$package_name)
+
+file_name <- paste0("data/","multiple_pack_Stats_",from_date,"_",to_date)
+file_name
+saveRDS(package_stats,file_name)
