@@ -1,3 +1,11 @@
+library(extrafont)
+#font_import()
+library(scales)      # pairs nicely with ggplot2 for plot label formatting
+library(gridExtra)   # a helper for arranging individual ggplot objects
+library(ggthemes)    # has a clean theme for ggplot2
+library(viridis)     # best. color. palette. evar.
+
+
 table(multiple_pack_Stats_full$package_name)
 multiple_pack_Stats_full$packageName <- ifelse(multiple_pack_Stats_full$package_name %in%
                                                  c("mongolite","RMongo","rmongodb"),
@@ -6,12 +14,33 @@ multiple_pack_Stats_full$packageName <- factor(multiple_pack_Stats_full$packageN
                                                   levels = c("RNeo4j","sparklyr","MongoDB"))
 table(multiple_pack_Stats_full$packageName)
 
+multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$continent_name,
+                                                  levels=c("Africa","South America",
+                                                           "Oceania","Asia","Europe",
+                                                           "North America"))
+
+#####
+concat_title <- paste0("Distribution of Package Downloads By \nContinent Between ",from_date," and ", to_date)
+
 ggplot(multiple_pack_Stats_full,aes(x=packageName,
                                     fill=packageName)) +
   geom_bar() +
-  facet_wrap(~continent_name,nrow=3,scales = "free")+
-  xlab(label = NA)+
-  theme_classic()
+  facet_wrap(~continent_name,nrow=2,scales = "free")+
+  xlab(label = NA) +
+  ggtitle(concat_title)+
+  theme(axis.title=element_text(size=10),
+        axis.ticks = element_blank(),
+        axis.text = element_text(size=3),
+        plot.title=element_text(size=11.5,hjust=0.5),
+        legend.title=element_text(size=8),
+        legend.text=element_text(size=6)) +
+  ylab("Number of Downloads")  +
+  xlab(NULL)+
+  scale_fill_viridis(name="Package Name",discrete = TRUE,alpha = 0.6)+
+  theme_tufte(ticks = TRUE )
+#  scale_fill_manual(values=c("cyan","magenta","yellow"))
+ 
+
 
 
 
