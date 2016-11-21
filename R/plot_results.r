@@ -1,11 +1,19 @@
-#Read countries table
-countries <- read.csv("data/GeoLite2-Country-Locations-en.csv",header = TRUE,
-                      stringsAsFactors = FALSE)
-head(countries)
+table(multiple_pack_Stats_full$package_name)
+multiple_pack_Stats_full$packageName <- ifelse(multiple_pack_Stats_full$package_name %in%
+                                                 c("mongolite","RMongo","rmongodb"),
+                                               "MongoDB",multiple_pack_Stats_full$package_name)
+multiple_pack_Stats_full$packageName <- factor(multiple_pack_Stats_full$packageName,
+                                                  levels = c("RNeo4j","sparklyr","MongoDB"))
+table(multiple_pack_Stats_full$packageName)
+
+ggplot(multiple_pack_Stats_full,aes(x=packageName,
+                                    fill=packageName)) +
+  geom_bar() +
+  facet_wrap(~continent_name,nrow=3,scales = "free")+
+  xlab(label = NA)+
+  theme_classic()
 
 
-package_stats2 <- merge(packages_stats,countries,by.x = "country",by.y="country_iso_code") 
-head(package_stats2)
 
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1

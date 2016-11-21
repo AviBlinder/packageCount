@@ -56,3 +56,13 @@ table(packages_stats$package_name)
 file_name <- paste0("data/","multiple_pack_Stats_",from_date,"_",to_date)
 file_name
 saveRDS(package_stats,file_name)
+
+###
+countries <- read.csv("data/GeoLite2-Country-Locations-en.csv",header = TRUE,
+                      stringsAsFactors = FALSE)
+head(countries)
+
+
+multiple_pack_Stats_full <- merge(packages_stats,countries,by.x = "country",by.y="country_iso_code") 
+head(multiple_pack_Stats_full)
+
