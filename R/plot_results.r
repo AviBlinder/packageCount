@@ -22,13 +22,15 @@ multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$conti
 #####
 concat_title <- paste0("Distribution of Package Downloads By \nContinent Between ",from_date," and ", to_date)
 
+
 ggplot(multiple_pack_Stats_full,aes(x=packageName,
                                     fill=packageName)) +
   geom_bar() +
   facet_wrap(~continent_name,nrow=2,scales = "free")+
-  xlab(label = NA) +
   ggtitle(concat_title)+
+  scale_x_discrete(breaks=NULL)+
   theme(axis.title=element_text(size=10),
+        axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.text = element_text(size=3),
         plot.title=element_text(size=11.5,hjust=0.5),
@@ -37,13 +39,13 @@ ggplot(multiple_pack_Stats_full,aes(x=packageName,
   ylab("Number of Downloads")  +
   xlab(NULL)+
   scale_fill_viridis(name="Package Name",discrete = TRUE,alpha = 0.6)+
-  theme_tufte(ticks = TRUE )
-#  scale_fill_manual(values=c("cyan","magenta","yellow"))
- 
+#  theme_tufte(ticks = TRUE ,base_family = "Arial")
+  theme_economist()
 
 
+ggsave(filename = "./figures/Distribution of Packages by Continent.png")
 
-
+#######################################################################
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1
 head(package_stats2)
