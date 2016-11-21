@@ -6,6 +6,7 @@ library(ggthemes)    # has a clean theme for ggplot2
 library(viridis)     # best. color. palette. evar.
 
 
+##Convert into factor and set sort order
 table(multiple_pack_Stats_full$package_name)
 multiple_pack_Stats_full$packageName <- ifelse(multiple_pack_Stats_full$package_name %in%
                                                  c("mongolite","RMongo","rmongodb"),
@@ -19,7 +20,9 @@ multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$conti
                                                            "Oceania","Asia","Europe",
                                                            "North America"))
 
+
 #####
+#Plot 1
 concat_title <- paste0("Distribution of Package Downloads By \nContinent Between ",from_date," and ", to_date)
 
 
@@ -45,7 +48,23 @@ ggplot(multiple_pack_Stats_full,aes(x=packageName,
 
 ggsave(filename = "./figures/Distribution of Packages by Continent.png")
 
+write.csv(multiple_pack_Stats_full,file = "./data/multiple_pack_Stats_full.csv")
 #######################################################################
+#Plot 2
+class(multiple_pack_Stats_full$date)
+
+extract_month <- function(packageName,Date){
+  
+   data.frame(packageName = packageName,
+                      Month = month(ymd(Date)))
+}
+
+multiple_pack_Stats_full %>% 
+  select(packageName,date) %>%
+  do(extract_month(.$packageName, .$date)) %>% 
+  group_by(packageName,Month) %>%
+  summarise(count_by_month = n_distinct()) -> dist_over_time
+
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1
 head(package_stats2)
