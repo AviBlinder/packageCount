@@ -29,18 +29,18 @@ ggplot(multiple_pack_Stats_full,aes(x=packageName,
   facet_wrap(~continent_name,nrow=2,scales = "free")+
   ggtitle(concat_title)+
   scale_x_discrete(breaks=NULL)+
-  theme(axis.title=element_text(size=10),
+  theme(axis.title=element_text(size=8),
         axis.text.x = element_blank(),
         axis.ticks = element_blank(),
         axis.text = element_text(size=3),
-        plot.title=element_text(size=11.5,hjust=0.5),
-        legend.title=element_text(size=8),
+        plot.title=element_text(size=11,hjust=0.5),
+        legend.title=element_text(size=9),
         legend.text=element_text(size=6)) +
   ylab("Number of Downloads")  +
   xlab(NULL)+
   scale_fill_viridis(name="Package Name",discrete = TRUE,alpha = 0.6)+
 #  theme_tufte(ticks = TRUE ,base_family = "Arial")
-  theme_economist()
+  theme_economist(base_size = 9)
 
 
 ggsave(filename = "./figures/Distribution of Packages by Continent.png")
