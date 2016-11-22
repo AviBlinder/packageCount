@@ -19,6 +19,11 @@ multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$conti
                                                   levels=c("Africa","South America",
                                                            "Oceania","Asia","Europe",
                                                            "North America"))
+########################################################################
+#Find min. date
+sp1 <- subset(multiple_pack_Stats_full,packageName == "sparklyr")
+sp1$date <- ymd(sp1$date)
+min_date <- min(sp1$date)
 
 
 #####
@@ -26,8 +31,8 @@ multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$conti
 concat_title <- paste0("Distribution of Package Downloads By \nContinent Between ",from_date," and ", to_date)
 
 
-ggplot(multiple_pack_Stats_full,aes(x=packageName,
-                                    fill=packageName)) +
+ggplot(multiple_pack_Stats_full[multiple_pack_Stats_full$date >= min_date,]
+       ,aes(x=packageName,fill=packageName)) +
   geom_bar() +
   facet_wrap(~continent_name,nrow=2,scales = "free")+
   ggtitle(concat_title)+
@@ -62,8 +67,11 @@ extract_month <- function(packageName,Date){
 multiple_pack_Stats_full %>% 
   select(packageName,date) %>%
   do(extract_month(.$packageName, .$date)) %>% 
-  group_by(packageName,Month) %>%
+  group_by(packageName,Month) -> g
+
   summarise(count_by_month = n_distinct()) -> dist_over_time
+
+count(g)
 
 stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
 stats1
