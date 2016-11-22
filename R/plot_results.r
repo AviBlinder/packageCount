@@ -1,9 +1,12 @@
-library(extrafont)
-#font_import()
+library(ggplot2)
 library(scales)      # pairs nicely with ggplot2 for plot label formatting
 library(gridExtra)   # a helper for arranging individual ggplot objects
 library(ggthemes)    # has a clean theme for ggplot2
 library(viridis)     # best. color. palette. evar.
+library(lubridate)
+library(dplyr)
+library(plyr)
+
 
 
 ##Convert into factor and set sort order
@@ -21,14 +24,18 @@ multiple_pack_Stats_full$continent_name <- factor(multiple_pack_Stats_full$conti
                                                            "North America"))
 ########################################################################
 #Find min. date
-sp1 <- subset(multiple_pack_Stats_full,packageName == "sparklyr")
-sp1$date <- ymd(sp1$date)
-min_date <- min(sp1$date)
+multiple_pack_Stats_full$date <- ymd(multiple_pack_Stats_full$date)
 
+min_dates_by_pkg <- ddply(multiple_pack_Stats_full,.(packageName), summarize,
+      min_date = min(date))
+min_dates_by_pkg
 
+min_date <- min_dates_by_pkg[min_dates_by_pkg$min_date == 
+                               max(min_dates_by_pkg$min_date),2]
+min_date
 #####
 #Plot 1
-concat_title <- paste0("Distribution of Package Downloads By \nContinent Between ",from_date," and ", to_date)
+concat_title <- paste0("Package Downloads By Continent Between ",min_date," and ", to_date)
 
 
 ggplot(multiple_pack_Stats_full[multiple_pack_Stats_full$date >= min_date,]
@@ -37,107 +44,62 @@ ggplot(multiple_pack_Stats_full[multiple_pack_Stats_full$date >= min_date,]
   facet_wrap(~continent_name,nrow=2,scales = "free")+
   ggtitle(concat_title)+
   scale_x_discrete(breaks=NULL)+
-  theme(axis.title=element_text(size=8),
-        axis.text.x = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text = element_text(size=3),
-        plot.title=element_text(size=11,hjust=0.5),
-        legend.title=element_text(size=9),
-        legend.text=element_text(size=6)) +
   ylab("Number of Downloads")  +
   xlab(NULL)+
-  scale_fill_viridis(name="Package Name",discrete = TRUE,alpha = 0.6)+
-#  theme_tufte(ticks = TRUE ,base_family = "Arial")
-  theme_economist(base_size = 9)
+  scale_fill_viridis(name="",discrete = TRUE,
+                     alpha = 0.75,option = "inferno") +
+  theme_economist(base_size = 8)
 
 
 ggsave(filename = "./figures/Distribution of Packages by Continent.png")
 
 write.csv(multiple_pack_Stats_full,file = "./data/multiple_pack_Stats_full.csv")
 #######################################################################
-#Plot 2
-class(multiple_pack_Stats_full$date)
+#Plot 2 - Distribution by Dates
 
-extract_month <- function(packageName,Date){
-  
-   data.frame(packageName = packageName,
-                      Month = month(ymd(Date)))
-}
+multiple_pack_Stats_full$date <- ymd(multiple_pack_Stats_full$date)
 
-multiple_pack_Stats_full %>% 
-  select(packageName,date) %>%
-  do(extract_month(.$packageName, .$date)) %>% 
-  group_by(packageName,Month) -> g
+d2 <- dplyr::count(multiple_pack_Stats_full,date, package_name)
+d2
 
-  summarise(count_by_month = n_distinct()) -> dist_over_time
+#Check distribution within mongoDB packages
+ggplot(d2[d2$package_name %in% c("RMongo","mongolite","rmongodb"),],
+       aes(date, n,group=package_name,color=package_name)) +
+  geom_line() +
+  scale_x_date() + xlab("") + ylab("Daily Views") +
+  scale_fill_date() +
+  xlab(NULL)+
+  ylab("Daily Downloads")+
+  ggtitle("Daily Downloads of MongoDB Related Packages")+
+  theme_economist(base_size = 8)+
+  theme(legend.position=c("top"),
+        legend.direction= "horizontal",
+        legend.title=element_blank(),
+        plot.title=element_text(hjust=0.5),
+        axis.title.y = element_text(size=9),
+        axis.text.x = element_text(angle=45,hjust = 1)
+        )
 
-count(g)
+ggsave(filename = "./figures/Daily Downloads of MongoDB Related Packages.png")
 
-stats1 <- sort(table(package_stats2$country_name),decreasing = TRUE)
-stats1
-head(package_stats2)
+##
+#Plot 3 - Comparison between packages along dates
+d3 <- dplyr::count(multiple_pack_Stats_full,date, packageName)
 
+ggplot(d3, aes(date, n,group=packageName,color=packageName)) +
+  geom_line() +
+  scale_x_date() + 
+  xlab("") + 
+  scale_fill_date() +
+  ylab("Daily Downloads")+
+  ggtitle("Daily Downloads of Selected  Packages")+
+  theme_economist(base_size = 8)+
+  theme(legend.position=c("top"),
+        legend.direction= "horizontal",
+        legend.title=element_blank(),
+        plot.title=element_text(hjust=0.5),
+        axis.title.y = element_text(size=9),
+        axis.text.x = element_text(angle=45,hjust = 1)
+  )
 
-
-
-#in case of conflict between plyr and dplyr, detach plyr
-#detach("package:plyr", unload=TRUE) 
-
-package_stats2 %>% group_by(continent_name)  %>%
-    dplyr::summarise(Count=n())  %>%
-    arrange(-Count) %>%
-    mutate(cont_order = row_number(Count),  
-           continent_name = factor(continent_name,
-             levels = continent_name[order(cont_order)]))  %>%
-    ggplot(aes(x=continent_name,y=count))+
-    geom_bar(aes(fill=continent_name),stat="identity",
-             show.legend = FALSE) +
-    coord_flip()+
-    geom_text(aes(label=continent_name),
-              y=0.2,
-              hjust=0,
-              angle=0,
-              size=4,
-              color="#222222") +
-    xlab("Continent Name") +
-    ylab("Total Number of Package Installed") +
-    theme(axis.text.y=element_blank(),
-          axis.ticks.y=element_blank())
-
-
-######
-
-mongo_stats <- readRDS("./data/mongolite_Stats")
-dim(mongo_stats)
-spark_stats <- readRDS("./data/sparklyr_Stats")
-dim(spark_stats)
-neo_stats <- readRDS("./data/RNeo4j_Stats")
-dim(neo_stats)
-comb_stats <- rbind(mongo_stats,spark_stats,neo_stats)
-
-package_stats2 <- merge(comb_stats,countries,by.x = "country",by.y="country_iso_code") 
-head(package_stats2)
-
-package_stats2 %>% 
-  mutate(package_name = factor(package_name)) %>%
-  group_by(package_name,continent_name)  %>%
-  dplyr::summarise(count=n()) %>%
-  arrange(-count) %>%
-  mutate(cont_order = row_number(),
-         continent_name = factor(continent_name,
-                                 levels = continent_name[order(cont_order)])) %>%
-  ggplot(aes(x=continent_name,y=count))+
-  geom_bar(aes(fill=continent_name,=package_name),stat="identity",
-           show.legend = FALSE) +
- coord_flip()+
-#  facet_grid(~ package_name) +
-  geom_text(aes(label=continent_name),
-            y=0.2,
-            hjust=0,
-            angle=0,
-            size=4,
-            color="#222222") +
-  xlab("Continent Name") +
-  ylab("Total Number of Package Installed") +
-  theme(axis.text.y=element_blank(),
-        axis.ticks.y=element_blank())
+ggsave(filename = "./figures/Daily Downloads of Selected  Packages.png")
